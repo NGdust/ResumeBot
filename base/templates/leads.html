@@ -1,0 +1,34 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col columnContent">
+      <div class="contentMenu">в поиске</div>
+      {% for vacansy in search %}
+        <div class="blockInfo" onclick="href('/vacansy/{{vacansy.id}}')">
+            <div><span>Компания: </span>{{ vacansy.employer.company }}</div>
+            <div><span>ФИО: </span>{{ vacansy.employer.fio }}</div>
+            <div><span>Телефон: </span>{{ vacansy.employer.phone }}</div>
+            <div><span>Должность: </span>{{ vacansy.position }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">7 дней</div>
+      {% for vacansy in seven %}
+        <div class="blockInfo" onclick="href('/vacansy/{{vacansy.id}}')">
+            <div><span>Компания: </span>{{ vacansy.employer.company }}</div>
+            <div><span>ФИО: </span>{{ vacansy.employer.fio }}</div>
+            <div><span>Телефон: </span>{{ vacansy.employer.phone }}</div>
+            <div><span>Должность: </span>{{ vacansy.position }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">Месяц</div>
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">Отзыв</div>
+  </div>
+</div>
+{% endblock %}

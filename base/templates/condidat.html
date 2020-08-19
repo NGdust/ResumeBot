@@ -1,0 +1,42 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col columnContent">
+      <div class="contentMenu">Заявки</div>
+      {% for condidat in leads %}
+        <div class="blockInfo" onclick="href('/condidat/{{condidat.id}}')">
+            <div><span>Имя: </span>{{ condidat.name }}</div>
+            <div><span>Телефон: </span>{{ condidat.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">Активные</div>
+      {% for condidat in verify %}
+        <div class="blockInfo" onclick="href('/condidat/{{condidat.id}}')">
+            <div><span>Имя: </span>{{ condidat.name }}</div>
+            <div><span>Телефон: </span>{{ condidat.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">Белый список</div>
+      {% for condidat in white %}
+        <div class="blockInfo" onclick="href('/condidat/{{condidat.id}}')">
+            <div><span>Имя: </span>{{ condidat.name }}</div>
+            <div><span>Телефон: </span>{{ condidat.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">Серый список</div>
+      {% for condidat in black %}
+        <div class="blockInfo" onclick="href('/condidat/{{condidat.id}}')">
+            <div><span>Имя: </span>{{ condidat.name }}</div>
+            <div><span>Телефон: </span>{{ condidat.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+</div>
+{% endblock %}

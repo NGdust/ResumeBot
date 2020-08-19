@@ -1,0 +1,45 @@
+.main{
+    height: 100vh;
+}
+
+.menuButton{
+    width: 100%;
+    background-color: #79aec8;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.menuButton:hover{
+    cursor: pointer;
+    background-color: #609ab6;
+}
+
+.columnContent{
+    padding: 25px;
+    text-align: center;
+}
+
+.contentMenu{
+   padding: 20px;
+}
+
+.blockInfo{
+    padding: 20px;
+    border-radius: 0.4em;
+    background-color: #9db0b6;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.blockInfo:hover{
+    cursor: pointer;
+}
+
+.formEdit{
+    padding: 30px;
+}
+
+.formInput{
+    padding-top: 10px;
+}

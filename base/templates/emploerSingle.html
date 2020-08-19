@@ -1,0 +1,26 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+<div class="formEdit">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="formInput"><input type="text" name="company" value="{{ emploer.company }}"></div>
+        <div class="formInput"><input type="text" name="fio" value="{{ emploer.fio }}"></div>
+        <div class="formInput"><input type="text" name="category" value="{{ emploer.category }}"></div>
+        <div class="formInput"><input type="text" name="phone" value="{{ emploer.phone }}"></div>
+        <div class="formInput"><input type="text" name="email" value="{{ emploer.email }}"></div>
+        <div class="formInput"><textarea name="comments_admin" placeholder="Комментарий администратора">{{ emploer.comments_admin }}</textarea></div>
+        <div class="formInput">
+            <input type="checkbox" id="verify" name="verify" {% if emploer.is_verify %}checked{% endif %}>
+            <label for="verify">Подтвержденный</label>
+        </div>
+        <div class="formInput">
+            <input type="checkbox" id="black_list" name="black_list" {% if emploer.black_list %}checked{% endif %}>
+            <label for="black_list">Серый список</label>
+        </div>
+        <div class="formInput">
+            <button class="btn btn-danger">Сохранить</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

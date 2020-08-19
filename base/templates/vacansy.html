@@ -1,0 +1,22 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+<div class="formEdit">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="formInput"><input type="text" name="position" value="{{ vacansy.position }}"></div>
+        <div class="formInput"><input type="text" name="experience" value="{{ vacansy.experience }}"></div>
+        <div class="formInput"><input type="text" name="age" value="{{ vacansy.age }}"></div>
+        <div class="formInput"><textarea name="description">{{ vacansy.description }}</textarea></div>
+        <div class="formInput"><input type="text" name="salary" value="{{ vacansy.salary }}"></div>
+        <div class="formInput"><textarea name="comments_admin" placeholder="Комментарий администратора">{{ emploer.comments_admin }}</textarea></div>
+        <div class="formInput">
+            <input type="checkbox" id="verify" name="verify" {% if vacansy.is_verify %}checked{% endif %}>
+            <label for="verify">Подтвержденный</label>
+        </div>
+        <div class="formInput">
+            <button class="btn btn-danger">Сохранить</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

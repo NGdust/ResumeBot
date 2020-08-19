@@ -1,0 +1,46 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+<div class="row">
+  <div class="col columnContent">
+      <div class="contentMenu">Заявки</div>
+      {% for employer in leads %}
+        <div class="blockInfo" onclick="href('/employer/{{employer.id}}')">
+            <div><span>Компания: </span>{{ employer.company }}</div>
+            <div><span>ФИО: </span>{{ employer.fio }}</div>
+            <div><span>Телефон: </span>{{ employer.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">Верифицирован</div>
+      {% for employer in verify %}
+        <div class="blockInfo" onclick="href('/employer/{{employer.id}}')">
+            <div><span>Компания: </span>{{ employer.company }}</div>
+            <div><span>ФИО: </span>{{ employer.fio }}</div>
+            <div><span>Телефон: </span>{{ employer.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">В поиске</div>
+      {% for employer in search %}
+        <div class="blockInfo" onclick="href('/employer/{{employer.id}}')">
+            <div><span>Компания: </span>{{ employer.company }}</div>
+            <div><span>ФИО: </span>{{ employer.fio }}</div>
+            <div><span>Телефон: </span>{{ employer.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+  <div class="col columnContent">
+      <div class="contentMenu">Серый список</div>
+      {% for employer in black %}
+        <div class="blockInfo" onclick="href('/employer/{{employer.id}}')">
+            <div><span>Компания: </span>{{ employer.company }}</div>
+            <div><span>ФИО: </span>{{ employer.fio }}</div>
+            <div><span>Телефон: </span>{{ employer.phone }}</div>
+        </div>
+      {% endfor %}
+  </div>
+</div>
+{% endblock %}

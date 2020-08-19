@@ -9,9 +9,9 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Candidate)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username',)
-    fields = ('email', 'password', 'username', 'name', 'secondname', 'address', 'phone', 'url')
+    fields = ('email', 'password', 'username', 'name', 'secondname', 'address', 'phone', 'url', 'is_verify', 'black_list', 'comments_admin')
 
 @admin.register(Employer)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('username',)
-    fields = ('email', 'password', 'username', 'company', 'category', 'fio', 'address', 'phone', 'url')
+    fields = ('email', 'password', 'username', 'company', 'category', 'fio', 'address', 'phone', 'url', 'is_verify', 'black_list', 'comments_admin')

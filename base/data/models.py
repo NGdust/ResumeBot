@@ -8,6 +8,9 @@ class Vacansy(models.Model):
     age = models.CharField('Возраст', blank=True, null=True, max_length=256)
     description = models.CharField('Описание', blank=True, null=True, max_length=2048)
     salary = models.IntegerField('Зарплата', blank=True, null=True)
+    comments_admin = models.TextField('Комментарий администратора', blank=True)
+
+    is_verify = models.BooleanField('Подтвержденный', default=False)
 
 
 class Resume(models.Model):
@@ -16,3 +19,5 @@ class Resume(models.Model):
     date = models.CharField('Срок работы', blank=True, null=True, max_length=256)
     reason = models.TextField('Причина увольнения', blank=True, null=True)
     results = models.TextField('Результаты', blank=True, null=True)
+
+    is_verify = models.BooleanField('Подтвержденный', default=False)

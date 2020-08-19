@@ -1,0 +1,37 @@
+{% extends "base/index.html" %}
+
+{% block content %}
+<div class="formEdit">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="formInput"><input type="text" name="name" value="{{ condidat.name }}"></div>
+        <div class="formInput"><input type="text" name="secondname" value="{{ condidat.secondname }}"></div>
+        <div class="formInput"><input type="text" name="email" value="{{ condidat.email }}"></div>
+        <div class="formInput"><input type="text" name="phone" value="{{ condidat.phone }}"></div>
+        <div class="formInput"><textarea name="comments_admin" placeholder="Комментарий администратора">{{ condidat.comments_admin }}</textarea></div>
+
+        <div class="formInput">
+            <input type="checkbox" id="verify" name="verify" {% if condidat.is_verify %}checked{% endif %}>
+            <label for="verify">Подтвержденный</label>
+        </div>
+        <div class="formInput">
+            <input type="checkbox" id="black_list" name="black_list" {% if condidat.black_list %}checked{% endif %}>
+            <label for="black_list">Серый список</label>
+        </div>
+        <div class="row">
+            {% for resume in resumes %}
+                <div class="col">
+                    <div>Место работы {{ forloop.counter }} </div>
+                    <div class="formInput"><input type="text" value="{{ resume.company }}"></div>
+                    <div class="formInput"><input type="text" value="{{ resume.date }}"></div>
+                    <div class="formInput"><input type="text" value="{{ resume.results }}"></div>
+                    <div class="formInput"><input type="text" value="{{ resume.reason }}"></div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="formInput">
+            <button class="btn btn-danger">Сохранить</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
