@@ -3,19 +3,23 @@ import requests
 import telebot
 from telebot import types
 from database import DB
+from keyboards import keyboardMenuEmployer, keyboardMenuCondidate, keyboardStart
 
 
 bot = telebot.TeleBot('1349245843:AAE7ffXUwG7iPWAvui3IRhagNrFqhZ7JGVA')
 db = DB("localhost", 27017).db
 print(' [X] START TELEGRAM BOT')
-
+db.insert_one({"chat_id": 0, 'level': '', 'type': ''})
 
 class User:
     def __init__(self, message, user):
         self.message = message
         self.user = user
-        db.update_one(self.user, {"$set": {"username": self.message.from_user.username}})
+        db.update_one(self.user, {"$set": {"username": self.message.from_user.username, "chat_id": message.chat.id}})
         self.host = 'http://127.0.0.1:8000/api/v1/user/'
+
+    def getFAQ(self):
+        pass
 
     def clearData(self, data):
         data.pop('_id')
@@ -40,19 +44,13 @@ class RegEmployer(User):
     def __init__(self, message, user):
         super(RegEmployer, self).__init__(message, user)
 
-        self.generateMsg()
+        self.registration()
 
     def menuEmployer(self):
-        markup = types.InlineKeyboardMarkup()
-        create_vacansy = types.InlineKeyboardButton(text='Создать заявку', callback_data='create_vacansy')
-        vacansies = types.InlineKeyboardButton(text='Мои вакансии', callback_data='vacansies')
-        faq = types.InlineKeyboardButton(text='FAQ', callback_data='faq')
-        markup.add(create_vacansy)
-        markup.add(vacansies)
-        markup.add(faq)
+        markup = keyboardMenuEmployer()
         bot.send_message(self.message.chat.id, 'Спасибо за регистрацию. Теперь вы можете создавать вакансии', reply_markup=markup)
 
-    def generateMsg(self):
+    def registration(self):
         if self.user['level'] == 'getCompany':
             db.update_one(self.user, {"$set": {"level": "getCategory", "company": self.message.text}})
             bot.send_message(self.message.chat.id, 'Укажите профиль деятельности:')
@@ -81,19 +79,16 @@ class RegCondidate(User):
     def __init__(self, message, user):
         super(RegCondidate, self).__init__(message, user)
 
-        self.generateMsg()
+        self.registration()
 
     def menuEmployer(self):
-        markup = types.InlineKeyboardMarkup()
-        create_resume = types.InlineKeyboardButton(text='Создать резюме', callback_data='create_resume')
-        resumes = types.InlineKeyboardButton(text='Мои резюме', callback_data='resumes')
-        faq = types.InlineKeyboardButton(text='FAQ', callback_data='faq')
-        markup.add(create_resume)
-        markup.add(resumes)
-        markup.add(faq)
+        markup = keyboardMenuCondidate()
         bot.send_message(self.message.chat.id, 'Спасибо за регистрацию. Теперь вы можете создавать резюму', reply_markup=markup)
 
-    def generateMsg(self):
+    def createResume(self):
+        pass
+
+    def registration(self):
         if self.user['level'] == 'getName':
             db.update_one(self.user, {"$set": {"level": "getSecondName", "name": self.message.text}})
             bot.send_message(self.message.chat.id, 'Фамилия:')
@@ -120,25 +115,33 @@ class RegCondidate(User):
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    markup = types.InlineKeyboardMarkup()
-    employer = types.InlineKeyboardButton(text='Работодатель', callback_data='employer')
-    condidate = types.InlineKeyboardButton(text='Соискатель', callback_data='condidate')
-    markup.add(employer)
-    markup.add(condidate)
-    bot.send_message(message.chat.id, 'Привет, я бот созданный для ....', reply_markup = markup)
+    bot.send_message(message.chat.id, 'Привет, я бот созданный для ....', reply_markup=keyboardStart())
+
+@bot.message_handler(commands=['menu'])
+def start_message(message):
+    user = db.find({"chat_id": message.chat.id})[0]
+    if not user:
+        bot.send_message(message.chat.id, 'Извините, вы еще не прошли регистрацию')
+    else:
+        if user['type'] == 'employer':
+            bot.send_message(message.chat.id, 'Главное меню работодателя!', reply_markup=keyboardMenuEmployer())
+        elif user['type'] == 'condidate':
+            bot.send_message(message.chat.id, 'Главное меню соискателя!', reply_markup=keyboardMenuCondidate())
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
+    checkDB = db.count_documents({"chat_id": call.message.chat.id})
+
     if call.message:
         if call.data == "employer":
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="В какой компании вы работаете:")
-            if not db.find({"chat_id": call.message.chat.id}):
+            if checkDB == 0:
                 db.insert_one({"chat_id": call.message.chat.id, "level": "getCompany", "type": call.data})
             else:
                 db.update_one(db.find({"chat_id": call.message.chat.id})[0], {"$set": {"level": "getCompany", "type": call.data}})
         if call.data == "condidate":
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Имя:")
-            if not db.find({"chat_id": call.message.chat.id}):
+            if checkDB == 0:
                 db.insert_one({"chat_id": call.message.chat.id, "level": "getName", "type": call.data})
             else:
                 db.update_one(db.find({"chat_id": call.message.chat.id})[0], {"$set": {"level": "getName", "type": call.data}})
@@ -146,11 +149,13 @@ def callback_inline(call):
 
 @bot.message_handler(content_types=["text"])
 def handle_message_keyboard(message):
-    user = db.find({"chat_id": message.chat.id})[0]
-    if user['type'] == 'employer':
-        RegEmployer(message, user)
-    elif user['type'] == 'condidate':
-        RegCondidate(message, user)
+    checkDB = db.count_documents({"chat_id": message.chat.id})
+    if checkDB != 0:
+        user = db.find({"chat_id": message.chat.id})[0]
+        if user['type'] == 'employer':
+            RegEmployer(message, user)
+        elif user['type'] == 'condidate':
+            RegCondidate(message, user)
 
 
 bot.polling()

@@ -16,16 +16,15 @@ class CreateEmployer(APIView):
 
     def post(self, request):
         data = clearData({**request.data})
-
-        try: Employer.objects.create(username=data['username'], email=data['email']).set_password('1')
-        except: pass
+        print(data)
+        Employer.objects.create(username=data['username'], email=data['email']).set_password('1')
         Employer.objects.filter(username=data['username']).update(
                                                                     company=data['company'],
-                                                                    category=data['company'],
-                                                                    address=data['company'],
-                                                                    fio=data['company'],
-                                                                    phone=data['company'],
-                                                                    url=data['company'],
+                                                                    category=data['category'],
+                                                                    address=data['address'],
+                                                                    fio=data['fio'],
+                                                                    phone=data['phone'],
+                                                                    url=data['url'],
                                                                     chat_id=data['chat_id'],
                                                                  )
         response = {'status': 'Done'}
