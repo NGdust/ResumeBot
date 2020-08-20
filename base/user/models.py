@@ -53,10 +53,14 @@ class Employer(User):
     phone = models.CharField('Телефон', blank=True, null=True, max_length=1024)
     url = models.CharField('Ссылка на сайт компании', blank=True, null=True, max_length=1024)
 
+    chat_id = models.IntegerField('ID чата в телеграме', blank=True)
 
 class Candidate(User):
     name = models.CharField('Имя', blank=True, null=True, max_length=256)
     secondname = models.CharField('Фамилия', blank=True, null=True, max_length=256)
+    age = models.IntegerField('Возраст', blank=True)
     address = models.CharField('Адресс', blank=True, null=True, max_length=1024)
     phone = models.CharField('Телефон', blank=True, null=True, max_length=1024)
     url = models.CharField('Ссылка на соц.сети', blank=True, null=True, max_length=1024)
+
+    chat_id = models.IntegerField('ID чата в телеграме', blank=True)

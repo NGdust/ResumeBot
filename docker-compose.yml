@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+  mongodb:
+    image: mongo:3.3
+    logging:
+      driver: none
+#    volumes:
+#      - ./data/db:/data/db:rw
+    ports:
+      - "27017:27017"
