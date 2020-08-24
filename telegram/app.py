@@ -77,7 +77,8 @@ def startRegUser(call):
                 "username": user['username'],
             }
             responce = requests.post(config.HOST + config.DATA_API + 'resumes/', data=data)
-            if len(json.loads(responce.text)) < 3:
+            limitResume = 3
+            if len(json.loads(responce.text)) < limitResume:
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Укажите название компании в которой вы работали: ")
                 config.db.update_one(user, {"$set": {"level": "getCompany"}})
             else:
