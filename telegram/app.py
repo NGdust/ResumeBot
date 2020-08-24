@@ -81,7 +81,7 @@ def startRegUser(call):
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Укажите название компании в которой вы работали: ")
                 config.db.update_one(user, {"$set": {"level": "getCompany"}})
             else:
-                bot.send_message(call.message.chat.id, text="Нельзя создавать больше 3 резюме")
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Нельзя создавать больше 3 резюме")
 
         if call.data == "vacansies":
             data = {

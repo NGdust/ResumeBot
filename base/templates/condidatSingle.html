@@ -26,6 +26,10 @@
                     <div class="formInput"><input type="text" value="{{ resume.date }}"></div>
                     <div class="formInput"><input type="text" value="{{ resume.results }}"></div>
                     <div class="formInput"><input type="text" value="{{ resume.reason }}"></div>
+                    <div class="formInput">
+                        <input type="checkbox" id="resume_verify_{{ forloop.counter }}" name="verify" {% if resume.is_verify %}checked{% endif %}>
+                        <label for="resume_verify_{{ forloop.counter }}">Подтвержденный</label>
+                    </div>
                 </div>
             {% endfor %}
         </div>
