@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from user.models import Employer, Candidate
+from user.models import Employer, Candidate, User
 
 
 def clearData(data):
@@ -34,5 +34,15 @@ class CreateCondidate(APIView):
         if not Candidate.objects.filter(username=username):
             Candidate.objects.create(username=username, email=email).set_password('1')
         Candidate.objects.filter(username=username).update(**data)
+        response = {'status': 'Done'}
+        return Response(response)
+
+class DeleteUser(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        data = clearData({**request.data})
+        username = data.pop('username')
+        User.objects.get(username=username).delete()
         response = {'status': 'Done'}
         return Response(response)

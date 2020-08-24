@@ -16,7 +16,8 @@ class Vacansy(models.Model):
 class Resume(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     company = models.CharField('Компания', blank=True, null=True, max_length=256)
-    date = models.CharField('Срок работы', blank=True, null=True, max_length=256)
+    position = models.CharField('Должность', blank=True, null=True, max_length=256)
+    experience = models.CharField('Срок работы', blank=True, null=True, max_length=256)
     reason = models.TextField('Причина увольнения', blank=True, null=True)
     results = models.TextField('Результаты', blank=True, null=True)
 
