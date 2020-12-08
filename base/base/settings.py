@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'user',
     'data',
+    'message',
     'website',
     'rest_framework',
 ]

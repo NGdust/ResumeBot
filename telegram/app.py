@@ -165,6 +165,12 @@ def startRegUser(call):
                        f"Причина увольнения: {item['reason']}\n" \
                        f"Результаты/достяжения: {item['results']}"
                 bot.send_message(call.message.chat.id, text=text)
+        if call.data == "faq":
+            type = user['type']
+
+            responce = json.loads(requests.get(config.HOST + config.MESSAGE_API + f'faq?type={type}').text)
+            bot.send_message(call.message.chat.id,
+                            responce['text'])
 
 
 @bot.message_handler(content_types=["text"],

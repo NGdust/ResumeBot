@@ -5,6 +5,7 @@ class Config:
     HOST = 'http://127.0.0.1:8000/'
     USER_API = 'api/v1/user/'
     DATA_API = 'api/v1/data/'
+    MESSAGE_API = 'api/v1/message/'
 
     db = DB("localhost", 27017)
     db.migrate()
