@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from user.models import Employer, Candidate
+from user.models import Employer, Candidate, User
 
 
 def clearData(data):
@@ -16,17 +16,11 @@ class CreateEmployer(APIView):
 
     def post(self, request):
         data = clearData({**request.data})
-        print(data)
-        Employer.objects.create(username=data['username'], email=data['email']).set_password('1')
-        Employer.objects.filter(username=data['username']).update(
-                                                                    company=data['company'],
-                                                                    category=data['category'],
-                                                                    address=data['address'],
-                                                                    fio=data['fio'],
-                                                                    phone=data['phone'],
-                                                                    url=data['url'],
-                                                                    chat_id=data['chat_id'],
-                                                                 )
+        username = data.pop('username')
+        email = data.pop('email')
+        if not Employer.objects.filter(username=username):
+            Employer.objects.create(username=username, email=email).set_password('1')
+        Employer.objects.filter(username=username).update(**data)
         response = {'status': 'Done'}
         return Response(response)
 
@@ -35,16 +29,20 @@ class CreateCondidate(APIView):
 
     def post(self, request):
         data = clearData({**request.data})
-        try:Candidate.objects.create(username=data['username'], email=data['email']).set_password('1')
-        except:pass
-        Candidate.objects.filter(username=data['username']).update(
-                                                                        name=data['name'],
-                                                                        secondname=data['secondname'],
-                                                                        age=data['age'],
-                                                                        address=data['address'],
-                                                                        phone=data['company'],
-                                                                        url=data['company'],
-                                                                        chat_id=data['chat_id'],
-                                                                  )
+        username = data.pop('username')
+        email = data.pop('email')
+        if not Candidate.objects.filter(username=username):
+            Candidate.objects.create(username=username, email=email).set_password('1')
+        Candidate.objects.filter(username=username).update(**data)
+        response = {'status': 'Done'}
+        return Response(response)
+
+class DeleteUser(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        data = clearData({**request.data})
+        username = data.pop('username')
+        User.objects.get(username=username).delete()
         response = {'status': 'Done'}
         return Response(response)

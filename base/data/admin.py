@@ -8,4 +8,4 @@ class VacansyAdmin(admin.ModelAdmin):
 
 @admin.register(Resume)
 class ResumeAdmin(admin.ModelAdmin):
-    list_display = ('candidate', 'company', 'date')
+    list_display = ('candidate', 'company', 'position')
