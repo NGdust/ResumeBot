@@ -40,9 +40,8 @@ class CreateResume(APIView):
 class GetVacansies(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request):
-        data = clearData({**request.data})
-        username = data.pop('username')
+    def get(self, request):
+        username = request.query_params.get('username')
         employer = Employer.objects.get(username=username)
         vacansies = Vacansy.objects.filter(employer=employer)
         response = []
@@ -62,9 +61,8 @@ class GetVacansies(APIView):
 class GetResumes(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request):
-        data = clearData({**request.data})
-        username = data.pop('username')
+    def get(self, request):
+        username = request.query_params.get('username')
         candidate = Candidate.objects.get(username=username)
         resumes = Resume.objects.filter(candidate=candidate)
         response = []

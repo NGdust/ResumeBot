@@ -111,10 +111,7 @@ def resetUser(message):
         logger.info(f"delete account")
         user = config.db.find({"chat_id": message.chat.id})[0]
         config.db.delete_one(user)
-        data = {
-            "username": user['username'],
-        }
-        requests.post(config.HOST + config.USER_API + 'delete', data=data)
+        requests.get(config.HOST + config.USER_API + f"delete?username={user['username']}")
         bot.send_message(message.chat.id, 'Ваша учетная запись удалена')
     except:
         bot.send_message(message.chat.id, 'Вы еще не зарегистрировались', reply_markup=keyboardStart())
@@ -149,10 +146,7 @@ def startRegUser(call):
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Нельзя создавать больше 3 резюме")
 
         if call.data == "vacansies":
-            data = {
-                "username": user['username'],
-            }
-            responce = requests.post(config.HOST + config.DATA_API + 'vacansies', data=data)
+            responce = requests.get(config.HOST + config.DATA_API + f"vacansies?username={user['username']}")
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Ваши вакансии:")
             for item in json.loads(responce.text):
                 text = f"Должность: {item['position']}\n" \
@@ -161,10 +155,7 @@ def startRegUser(call):
                        f"Зарплата: {item['salary']}"
                 bot.send_message(call.message.chat.id, text=text)
         if call.data == "resumes":
-            data = {
-                "username": user['username'],
-            }
-            responce = requests.post(config.HOST + config.DATA_API + 'resumes', data=data)
+            responce = requests.get(config.HOST + config.DATA_API + f"resumes?username={user['username']}")
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Ваши резюме: ")
             resumes = json.loads(responce.text)
             for item in resumes:

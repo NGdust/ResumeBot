@@ -40,9 +40,7 @@ class CreateCondidate(APIView):
 class DeleteUser(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request):
-        data = clearData({**request.data})
-        username = data.pop('username')
+    def get(self, request):
+        username = request.query_params.get('username')
         User.objects.get(username=username).delete()
-        response = {'status': 'Done'}
-        return Response(response)
+        return Response({'status': 'Done'})
