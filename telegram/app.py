@@ -35,7 +35,8 @@ LEVEL_CANDIDAT = {
     8: {"method": "", "tip": "", "status": "done"},
 }
 
-def AK47(user, LEVEL, message):
+def AK47(LEVEL, message):
+    user = config.db.find({"chat_id": message.chat.id})[0]
     for i, v in LEVEL.items():
         if user['level'] == v['method']:
             next_level = LEVEL[i+1]
@@ -44,8 +45,9 @@ def AK47(user, LEVEL, message):
             if next_level['tip']:
                 bot.send_message(message.chat.id, next_level['tip'])
             if next_level['status'] == "done":
-                return True
-    return False
+                user = config.db.find({"chat_id": message.chat.id})[0]
+                return user, True
+    return user, False
 
 
 @bot.message_handler(commands=['clear'])
@@ -106,12 +108,13 @@ def start_message(message):
 @bot.message_handler(commands=['delete'])
 def resetUser(message):
     try:
+        logger.info(f"delete account")
         user = config.db.find({"chat_id": message.chat.id})[0]
         config.db.delete_one(user)
         data = {
             "username": user['username'],
         }
-        requests.post(config.HOST + config.USER_API + 'delete/', data=data)
+        requests.post(config.HOST + config.USER_API + 'delete', data=data)
         bot.send_message(message.chat.id, 'Ваша учетная запись удалена')
     except:
         bot.send_message(message.chat.id, 'Вы еще не зарегистрировались', reply_markup=keyboardStart())
@@ -137,7 +140,7 @@ def startRegUser(call):
             data = {
                 "username": user['username'],
             }
-            responce = requests.post(config.HOST + config.DATA_API + 'resumes/', data=data)
+            responce = requests.post(config.HOST + config.DATA_API + 'resumes', data=data)
             limitResume = 3
             if len(json.loads(responce.text)) < limitResume:
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Укажите название компании в которой вы работали: ")
@@ -149,7 +152,7 @@ def startRegUser(call):
             data = {
                 "username": user['username'],
             }
-            responce = requests.post(config.HOST + config.DATA_API + 'vacansies/', data=data)
+            responce = requests.post(config.HOST + config.DATA_API + 'vacansies', data=data)
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Ваши вакансии:")
             for item in json.loads(responce.text):
                 text = f"Должность: {item['position']}\n" \
@@ -161,7 +164,7 @@ def startRegUser(call):
             data = {
                 "username": user['username'],
             }
-            responce = requests.post(config.HOST + config.DATA_API + 'resumes/', data=data)
+            responce = requests.post(config.HOST + config.DATA_API + 'resumes', data=data)
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,  text="Ваши резюме: ")
             resumes = json.loads(responce.text)
             for item in resumes:
@@ -173,30 +176,12 @@ def startRegUser(call):
                 bot.send_message(call.message.chat.id, text=text)
 
 
-def sendCreateEmployer(message):
-    employer = config.db.find({"chat_id": message.chat.id})[0]
-    data = {
-        'username': employer['username'],
-        'email': employer['email'],
-        'company': employer['company'],
-        'category': employer['category'],
-        'address': employer['address'],
-        'fio': employer['fio'],
-        'phone': employer['phone'],
-        'url': employer['url'],
-        'chat_id': employer['chat_id'],
-
-    }
-    requests.post(url=config.HOST + config.USER_API + 'create/employer/', data=data)
-    config.db.update_one(employer, {"$set": {"status": "done"}})
-
-
 @bot.message_handler(content_types=["text"],
                      func=lambda message: config.db.find({"chat_id": message.chat.id})[0]['type'] == 'employer'
                                           and config.db.find({"chat_id": message.chat.id})[0]['status'] == 'reg')
 def pollRegEmployer(message):
-    employer = config.db.find({"chat_id": message.chat.id})[0]
-    if AK47(employer, LEVEL_EMPLOYER, message):
+    employer, end = AK47(LEVEL_EMPLOYER, message)
+    if end:
         data = {
             'username': message.from_user.username,
             'email': employer['email'],
@@ -208,7 +193,7 @@ def pollRegEmployer(message):
             'url': employer['url'],
 
         }
-        requests.post(url=config.HOST + 'create/employer/', data=data)
+        requests.post(url=config.HOST + config.USER_API + 'create/employer', data=data)
 
         bot.send_message(message.chat.id,
                          'Спасибо за регистрацию. Теперь вы можете создавать вакансии',
@@ -221,8 +206,8 @@ def pollRegEmployer(message):
                      func=lambda message: config.db.find({"chat_id": message.chat.id})[0]['type'] == 'condidate'
                                           and config.db.find({"chat_id": message.chat.id})[0]['status'] == 'reg')
 def pollRegCandidat(message):
-    candidat = config.db.find({"chat_id": message.chat.id})[0]
-    if AK47(candidat, LEVEL_CANDIDAT, message):
+    candidat, end = AK47(LEVEL_CANDIDAT, message)
+    if end:
         data = {
             'username': message.from_user.username,
             'email': candidat['email'],
@@ -234,25 +219,10 @@ def pollRegCandidat(message):
             'phone': candidat['phone'],
             'url': candidat['url'],
         }
-        requests.post(url=config.HOST + 'create/condidate/', data=data)
+        requests.post(url=config.HOST + 'create/condidate', data=data)
         bot.send_message(message.chat.id,
                          'Спасибо за регистрацию. Теперь вы можете создавать резюму',
                          reply_markup=keyboardMenuCondidate())
-
-
-def sendCreateVacansy(message):
-    employer = config.db.find({"chat_id": message.chat.id})[0]
-    data = {
-        'username': employer['username'],
-        'position': employer['position'],
-        'experience': employer['experience'],
-        'age': employer['age'],
-        'salary': employer['salary'],
-        'description': employer['description'],
-
-    }
-    requests.post(url=config.HOST + config.DATA_API + 'create/vacansy/', data=data)
-    config.db.update_one(employer, {"$set": {"status": "done"}})
 
 
 @bot.message_handler(content_types=["text"], func=lambda message: config.db.find({"chat_id": message.chat.id})[0]['type'] == 'employer'
@@ -275,25 +245,20 @@ def pollCreateVacansy(message):
     elif employer['level'] == 'getDescription':
         config.db.update_one(employer, {"$set": {"level": "", "description": message.text}})
 
-        sendCreateVacansy(message)
+        data = {
+            'username': employer['username'],
+            'position': employer['position'],
+            'experience': employer['experience'],
+            'age': employer['age'],
+            'salary': employer['salary'],
+            'description': employer['description'],
+
+        }
+        requests.post(url=config.HOST + config.DATA_API + 'create/vacansy/', data=data)
+        config.db.update_one(employer, {"$set": {"status": "done"}})
 
         markup = keyboardMenuEmployer()
         bot.send_message(message.chat.id, 'Вы создали свою вакансию...', reply_markup=markup)
-
-
-def sendCreateResume(message):
-    employer = config.db.find({"chat_id": message.chat.id})[0]
-    data = {
-        'username': employer['username'],
-        'company': employer['company'],
-        'position': employer['position'],
-        'experience': employer['experience'],
-        'results': employer['results'],
-        'reason': employer['reason'],
-
-    }
-    requests.post(url=config.HOST + config.DATA_API + 'create/resume/', data=data)
-    config.db.update_one(employer, {"$set": {"status": "done"}})
 
 
 @bot.message_handler(content_types=["text"], func=lambda message: config.db.find({"chat_id": message.chat.id})[0]['type'] == 'condidate'
@@ -316,10 +281,22 @@ def pollCreateResume(message):
     elif employer['level'] == 'getReason':
         config.db.update_one(employer, {"$set": {"level": "", "reason": message.text}})
 
-        sendCreateResume(message)
+        data = {
+            'username': employer['username'],
+            'company': employer['company'],
+            'position': employer['position'],
+            'experience': employer['experience'],
+            'results': employer['results'],
+            'reason': employer['reason'],
+
+        }
+        requests.post(url=config.HOST + config.DATA_API + 'create/resume/', data=data)
+        config.db.update_one(employer, {"$set": {"status": "done"}})
 
         markup = keyboardMenuCondidate()
         bot.send_message(message.chat.id, 'Вы создали свое резюме...', reply_markup=markup)
+
+
 
 if __name__ == '__main__':
     bot.polling()
